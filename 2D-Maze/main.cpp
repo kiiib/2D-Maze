@@ -1,32 +1,42 @@
 /* Create a 2D Maze */
 #include <iostream>
+#include <stack>
 #include "Angel.h"
 
 using namespace std;
 
-const int MazeWidth = 5;	// Maze's Width
-const int MazeHeight = 5;	// Maze's Height
+const int MazeWidth = 10;	// Maze's Width
+const int MazeHeight = 10;	// Maze's Height
 const int NumPoints = MazeWidth * MazeWidth * 2;
 //const int NumPoints = 2;
-
-int w = 50;
-int cols = floor(glutGet(GLUT_WINDOW_WIDTH) / w);	// cols number = window's width divide by w
-int rows = floor(glutGet(GLUT_WINDOW_HEIGHT) / w);
 
 class Cell{
 public:
 	int i;
 	int j;
 
+	void show() {
+		
+	}
 };
 
 void initMaze() {
+	int w = 50;
+	int cols = floor(glutGet(GLUT_WINDOW_WIDTH) / w);
+	int rows = floor(glutGet(GLUT_WINDOW_HEIGHT) / w);
+	stack<Cell> grid;
+
+	// init grid
 	for (int j = 0; j < cols; j++) {
 		for (int i = 0; i < rows; i++) {
-			
+			Cell cell;
+			cell.i = i;
+			cell.j = j;
+			grid.push(cell);
+			cout << cell.i << "  " << cell.j << endl;
 		}
 	}
-
+	
 	vec2 points[NumPoints];
 	points[0] = vec2(-0.9, 0.9);
 	points[1] = vec2(0.5, 0.9);
