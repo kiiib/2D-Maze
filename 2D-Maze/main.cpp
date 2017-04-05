@@ -1,47 +1,74 @@
 /* Create a 2D Maze */
 #include <iostream>
 #include <stack>
+#include <vector>
 #include "Angel.h"
 
 using namespace std;
 
 const int MazeWidth = 10;	// Maze's Width
 const int MazeHeight = 10;	// Maze's Height
-const int NumPoints = MazeWidth * MazeWidth * 2;
-//const int NumPoints = 2;
+const int NumPoints = MazeWidth * MazeWidth * 8;
+const int flag = MazeWidth * MazeWidth;
+vec2 points[NumPoints];
+float drawOffset = 0.01;
+float w = 0.2;
+int cellNumber = 0;
 
 class Cell{
 public:
-	int i;
-	int j;
+	int flag;
+	float i;
+	float j;
+	bool wallTop = true;
+	bool wallRight = true;
+	bool wallBottom = true;
+	bool wallLeft = true;
 
 	void show() {
+		if (wallTop) {
+			points[flag] = vec2(i, j);
+			points[flag + 1] = vec2(i + w, j);
+		}
+		
+		if (wallRight) {
+			points[flag + 2] = vec2(i + w, j);
+			points[flag + 3] = vec2(i + w, j - w);
+		}
+		
+		if (wallBottom) {
+			points[flag + 4] = vec2(i + w, j - w);
+			points[flag + 5] = vec2(i, j - w);
+		}
+		
+		if (wallLeft) {
+			points[flag + 6] = vec2(i, j - w);
+			points[flag + 7] = vec2(i, j);
+		}
 		
 	}
 };
 
 void initMaze() {
-	int w = 50;
-	int cols = floor(glutGet(GLUT_WINDOW_WIDTH) / w);
-	int rows = floor(glutGet(GLUT_WINDOW_HEIGHT) / w);
-	stack<Cell> grid;
-
+	
+	
+	/*int cols = floor(glutGet(GLUT_WINDOW_WIDTH) / w);
+	int rows = floor(glutGet(GLUT_WINDOW_HEIGHT) / w);*/
+	vector<Cell> grid;
+	
 	// init grid
-	for (int j = 0; j < cols; j++) {
-		for (int i = 0; i < rows; i++) {
+	for (int j = 10; j > -10; j -= 2) {
+		for (int i = -10; i < 10; i += 2) {
 			Cell cell;
-			cell.i = i;
-			cell.j = j;
-			grid.push(cell);
-			cout << cell.i << "  " << cell.j << endl;
+			cell.i = (float)i / 10;
+			cell.j = (float)j / 10;
+			cell.flag = cellNumber;
+			cell.show();
+			grid.push_back(cell);
+			cellNumber += 8;
+			//cout << cell.i << "  " << cell.j << endl;
 		}
 	}
-	
-	vec2 points[NumPoints];
-	points[0] = vec2(-0.9, 0.9);
-	points[1] = vec2(0.5, 0.9);
-	points[2] = vec2(0.5, 0.9);
-	points[3] = vec2(0.9, 0.9);
 
 	// Create a vertex array object
 	GLuint vao;
@@ -69,6 +96,7 @@ void initMaze() {
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT);	//	clear the window
 	glDrawArrays(GL_LINES, 0, NumPoints);    // draw the points
+	glRectf(-0.5f, -0.5f, 0.5f, 0.5f);
 	glFlush();
 }
 void keyboard(unsigned char key, int x, int y) {
@@ -81,7 +109,7 @@ void keyboard(unsigned char key, int x, int y) {
 int main(int argc, char** argv) {
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA);
-	glutInitWindowSize(500, 500);
+	glutInitWindowSize(512, 512);
 
 	//check the version of freeglut
 	glutInitContextVersion(3, 2);
