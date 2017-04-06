@@ -8,26 +8,22 @@ using namespace std;
 
 const int MazeWidth = 10;	// Maze's Width
 const int MazeHeight = 10;	// Maze's Height
-const int eachCellNumPoints = 8;
-const int NumPoints = MazeWidth * MazeWidth * eachCellNumPoints;
+const int NumPoints = MazeWidth * MazeWidth * 8;
 const int flag = MazeWidth * MazeWidth;
 vec2 points[NumPoints];
 float drawOffset = 0.01;
-float w = 0.2;	// each cell's width and height
+float w = 0.2;
 int cellNumber = 0;
 
 class Cell{
 public:
 	int flag;
-	float i;	// the location of OpenGL draw
+	float i;
 	float j;
-	int coordinateX;	// the location of coordinate
-	int coordinateY;	
 	bool wallTop = true;
 	bool wallRight = true;
 	bool wallBottom = true;
 	bool wallLeft = true;
-	bool visited = false;
 
 	void show() {
 		if (wallTop) {
@@ -49,72 +45,30 @@ public:
 			points[flag + 6] = vec2(i, j - w);
 			points[flag + 7] = vec2(i, j);
 		}
-		//cout << coordinateX << "  " << coordinateY << endl;
-	}
-
-	void checkNeigbors() {
-		vector<Cell> neighbors;
-
-		Cell top = grid[index(i, j - 1)];
-		Cell right = grid[index(i + 1, j)];
-		Cell bottom = grid[index(i, j + 1)];
-		Cell top = grid[index(i - 1, j)];
-
-		if (!top.visited) {
-			neighbors.push_back(top);
-		}
+		
 	}
 };
-int index(int i, int j) {
-	return i + j * 10;	// 10, because of there is a 10x10 grid
-}
 
-vector<Cell> grid;
-Cell currentCell;
-
-void initGrid() {
-	int coordinateX = 0;
-	int coordinateY = 0;
+void initMaze() {
+	
+	
+	/*int cols = floor(glutGet(GLUT_WINDOW_WIDTH) / w);
+	int rows = floor(glutGet(GLUT_WINDOW_HEIGHT) / w);*/
+	vector<Cell> grid;
+	
 	// init grid
 	for (int j = 10; j > -10; j -= 2) {
 		for (int i = -10; i < 10; i += 2) {
 			Cell cell;
 			cell.i = (float)i / 10;
 			cell.j = (float)j / 10;
-			cell.coordinateX = coordinateX;
-			cell.coordinateY = coordinateY;
 			cell.flag = cellNumber;
-			//cell.show();
+			cell.show();
 			grid.push_back(cell);
-
-			if (coordinateX < 9)
-				coordinateX++;
-			else
-				coordinateX = 0;
-
-			cellNumber += eachCellNumPoints;
-
+			cellNumber += 8;
 			//cout << cell.i << "  " << cell.j << endl;
 		}
-		if (coordinateY < 9)
-			coordinateY++;
 	}
-}
-void drawGrid() {
-	for (int i = 0; i < grid.size(); i++) {
-		grid[i].show();
-	}
-	currentCell.visited = true;
-	currentCell.checkNeigbors();
-}
-void initMaze() {
-	
-	/*int cols = floor(glutGet(GLUT_WINDOW_WIDTH) / w);
-	int rows = floor(glutGet(GLUT_WINDOW_HEIGHT) / w);*/
-
-	initGrid();
-	drawGrid();
-	currentCell = grid[0];	// set the first cell is current
 
 	// Create a vertex array object
 	GLuint vao;
@@ -142,7 +96,7 @@ void initMaze() {
 void display() {
 	glClear(GL_COLOR_BUFFER_BIT);	//	clear the window
 	glDrawArrays(GL_LINES, 0, NumPoints);    // draw the points
-
+	glRectf(-0.5f, -0.5f, 0.5f, 0.5f);
 	glFlush();
 }
 void keyboard(unsigned char key, int x, int y) {
