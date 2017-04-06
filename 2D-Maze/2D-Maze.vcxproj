@@ -19,9 +19,9 @@
     </ProjectConfiguration>
   </ItemGroup>
   <PropertyGroup Label="Globals">
-    <ProjectGuid>{0E3131F1-EBAE-43F2-BD9B-21ED3E6C3854}</ProjectGuid>
+    <ProjectGuid>{9595D262-48B1-4B5A-AB8D-4F9B43DFFBB5}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
-    <RootNamespace>test</RootNamespace>
+    <RootNamespace>My2DMaze</RootNamespace>
     <WindowsTargetPlatformVersion>8.1</WindowsTargetPlatformVersion>
   </PropertyGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
@@ -147,14 +147,8 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClCompile Include="main.cpp" />
     <ClCompile Include="InitShader.cpp" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="Angel.h" />
-    <ClInclude Include="CheckError.h" />
-    <ClInclude Include="mat.h" />
-    <ClInclude Include="vec.h" />
+    <ClCompile Include="main.cpp" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

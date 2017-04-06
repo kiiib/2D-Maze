@@ -1,7 +1,7 @@
-/* Create a 2D Maze */
+/* This program for creating a 2D maze and showing using OpenGL  */
 #include <iostream>
-#include <stack>
 #include <vector>
+#include <stack>
 #include <time.h>
 #include "Angel.h"
 
@@ -13,7 +13,6 @@ const int eachCellNumPoints = 8;
 const int NumPoints = MazeWidth * MazeWidth * eachCellNumPoints;
 const int flag = MazeWidth * MazeWidth;
 vec2 points[NumPoints];
-float drawOffset = 0.01;
 float w = 0.2;	// each cell's width and height
 int cellNumber = 0;
 
@@ -97,31 +96,57 @@ public:
 		}
 		// if neighors are exist, pick up a random neigbor
 		if (neighbors.size() > 0) {
-			srand((unsigned)time(NULL));
+			
 			int random = (floor)(rand() % neighbors.size());
-			//cout << random << endl;
+			//cout << "chosen neighbor is " << random << endl;
 			return neighbors[random];
 		}
 		else {
-			neighbors[0].isExist = false;
-			return neighbors[0];	// if neighbor doesn't exists, return nothing
+			Cell nullCell;
+			nullCell.isExist = false;
+			return nullCell;	// if neighbor doesn't exists, return nothing
 		}
-		
 	}
 };
-void removeWalls(Cell a, Cell b) {
-	int x = a.coordinateX - b.coordinateX;
+vector<Cell> grid;
+Cell currentCell;
+stack<Cell> cellPath;	// for recording the modification of current cell into the stack
+
+void removeWalls(Cell currentCell, Cell neighborCell) {
+	int x = currentCell.coordinateX - neighborCell.coordinateX;
+	int y = currentCell.coordinateY - neighborCell.coordinateY;
+
 	/*
 		x = 1 means neighbor in the left side
 		remove the current cell's left wall and neighbor's right wall
 
+		x = -1 means neighbor in the right side
+		remove the current cell's right wall and neighbor's left wall
+
+		y = 1 means neighbor in the top side
+		remove the current cell's top wall and neighbor's bottom wall
+
+		y = -1 means neighbor in the bottom side
+		remove the current cell's bottom wall and neighbor's top wall
 	*/
 	if (x == 1) {
-		a.wallLeft = false;
+		grid[currentCell.numCell].wallLeft = false;
+		grid[neighborCell.numCell].wallRight = false;
 	}
+	if (x == -1) {
+		grid[currentCell.numCell].wallRight = false;
+		grid[neighborCell.numCell].wallLeft = false;
+	}
+	if (y == 1) {
+		grid[currentCell.numCell].wallTop = false;
+		grid[neighborCell.numCell].wallBottom = false;
+	}
+	if (y == -1) {
+		grid[currentCell.numCell].wallBottom = false;
+		grid[neighborCell.numCell].wallTop = false;
+	}
+
 }
-vector<Cell> grid;
-Cell currentCell;
 
 void initGrid() {
 	int coordinateX = 0;
@@ -137,6 +162,7 @@ void initGrid() {
 			cell.coordinateY = coordinateY;
 			cell.flag = cellNumber;
 			cell.numCell = numCell;
+
 			// push each cell into grid
 			grid.push_back(cell);
 
@@ -154,21 +180,39 @@ void initGrid() {
 	}
 }
 void drawGrid() {
-	currentCell = grid[55];	// set the first cell is current
-	currentCell.visited = true;
-	Cell nextCell = currentCell.checkNeighbors(grid);
-	if (nextCell.isExist) {
-		// mark next cell is visited
-		nextCell.visited = true;
-		// remove the wall between the current cell and the chosen cell
-		removeWalls(currentCell, nextCell);
-		// set it to be the next one
-		currentCell = nextCell;
-	}
+	currentCell = grid[0];	// set the first cell is current
+	grid[currentCell.numCell].visited = true;
+
+	do {
+		Cell nextCell = currentCell.checkNeighbors(grid);
+		if (nextCell.isExist) {
+			//cout << "next cell is " << nextCell.numCell << endl;
+
+			//mark the next cell is visited
+			grid[nextCell.numCell].visited = true;
+			// push the current cell into stack
+			cellPath.push(currentCell);
+
+			// remove the wall between the current cell and the chosen cell
+			removeWalls(currentCell, nextCell);
+
+			currentCell = nextCell;	// set it to be the next one
+			//cout << "current Cell " << currentCell.numCell << endl;
+		}
+		else if (!nextCell.isExist) {
+			// confirm the stack is not empty and pop an element(the lastest)
+			cellPath.pop();
+			currentCell = cellPath.top();	// get the last cell
+		}
+	} while (currentCell.numCell != 0);	// until back to the start site stop the loop
+		
+
+
 	for (int i = 0; i < grid.size(); i++) {
 		grid[i].show();
 	}
 }
+
 void initMaze() {
 	initGrid();
 	drawGrid();
@@ -210,6 +254,7 @@ void keyboard(unsigned char key, int x, int y) {
 	}
 }
 int main(int argc, char** argv) {
+
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_RGBA);
 	glutInitWindowSize(512, 512);
@@ -221,7 +266,7 @@ int main(int argc, char** argv) {
 	glutCreateWindow("2D Maze");
 
 	glewInit();
-
+	srand((unsigned)time(NULL));
 	initMaze();
 
 	// Callback function
