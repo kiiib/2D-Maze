@@ -22,4 +22,18 @@
       <Filter>原始程式檔</Filter>
     </ClCompile>
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Angel.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="CheckError.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="mat.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+    <ClInclude Include="vec.h">
+      <Filter>標頭檔</Filter>
+    </ClInclude>
+  </ItemGroup>
 </Project>
